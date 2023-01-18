@@ -23,7 +23,8 @@ def trainer_synapse(model, snapshot_path):
     batch_size = 12
 
     db_train = MedicalImage_dataset_mixup(base_dir='/home/gyf/MyData/Synapse/train_npz/', suffix_name=".npz",
-                                    transform=transforms.Compose([RandomGenerator(output_size=[224, 224])]))    def worker_init_fn(worker_id):
+                                    transform=transforms.Compose([RandomGenerator(output_size=[224, 224])]))   
+    def worker_init_fn(worker_id):
         random.seed(1234 + worker_id)
 
     trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
