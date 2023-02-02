@@ -117,3 +117,30 @@ def test_single_volume_hyper_ensemble(image, label, net, hyper, classes, patch_s
         sitk.WriteImage(img_itk, test_save_path + '/' + case + "_img.nii.gz")
         sitk.WriteImage(lab_itk, test_save_path + '/' + case + "_gt.nii.gz")
     return metric_list
+
+class Homoscedastic(torch.nn.Module):
+    '''https://arxiv.homoscedasticorg/abs/1705.07115'''
+
+    def __init__(self, n_tasks, reduction='sum'):
+        super(Homoscedastic, self).__init__()
+        self.n_tasks = n_tasks
+        self.reduction = reduction
+
+        self.log_vars = torch.nn.Parameter(torch.zeros(self.n_tasks))
+
+    def forward(self, losses):
+        dtype = losses.dtype
+        device = losses.device
+
+        stds = (torch.exp(self.log_vars) ** (1 / 2)).to(device).to(dtype)
+        coeffs = (2 * stds * stds) ** (-1)
+
+        multi_task_losses = coeffs * losses + torch.log(stds * stds + 1)
+
+        if self.reduction == 'sum':
+            multi_task_losses = multi_task_losses.sum()
+        if self.reduction == 'mean':
+            multi_task_losses = multi_task_losses.mean()
+
+        return multi_task_losses
+    
