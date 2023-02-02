@@ -11,15 +11,13 @@ from einops import rearrange
 from functools import partial
 
 class HyperModel(nn.Module):
-    def __init__(self, hyper_num=1):
+    def __init__(self, hyper_num=1, hyper_layer_num=6, hyper_layer_size=256):
         super(HyperModel, self).__init__()
 
-        self.hyper_num = hyper_num
-        hyper_layer_num = 6
-        hyper_layer_unit = [256] * hyper_layer_num
+        hyper_layer_unit = [hyper_layer_size] * hyper_layer_num
         self.hyper_dense_List = nn.ModuleList()
 
-        pre = self.hyper_num
+        pre = hyper_num
         for ii in range(hyper_layer_num):
 
             self.hyper_dense_List.append(nn.Linear(pre, hyper_layer_unit[ii]))
@@ -115,7 +113,7 @@ class SuperConvBlock(nn.Module):
 
 
 class Unet(nn.Module):
-    def __init__(self,  input_channels=3,num_classes=9, **kwargs):
+    def __init__(self, input_channels=3, num_classes=9, hyper_layer_num=6, hyper_layer_size=512, **kwargs):
         super().__init__()
 
         nb_filter = [32, 64, 128, 256, 512]
@@ -135,7 +133,7 @@ class Unet(nn.Module):
         self.conv0_4 = SuperConvBlock(nb_filter[0]+nb_filter[1], nb_filter[0], nb_filter[0])
 
         self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
-        self.hyper_model = HyperModel(1)
+        self.hyper_model = HyperModel(512, hyper_layer_num, hyper_layer_size)
 
 
     def forward(self, hyper, input):
