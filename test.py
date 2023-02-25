@@ -62,7 +62,7 @@ if __name__ == '__main__':
     test_save_path = None
 
     net.load_state_dict(torch.load("./save_model_pt/Synapse/Hyper_model/epoch_149_hyper.pth"))
-    hyper = np.array((0.8,))
+    hyper = np.zeros((512,)) + 0.8
     hyper = torch.from_numpy(hyper).cuda()
     hyper = hyper[None, ...]
     hyper = hyper.float()
