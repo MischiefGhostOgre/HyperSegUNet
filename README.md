@@ -11,7 +11,7 @@
   author={郭逸凡 and 裴瑄 and 王大寒 and 陈培芝},
   journal={四川师范大学学报(录用)},
   note = {\url{https://github.com/MischiefGhostOgre/HyperSegUNet}}，
-  year={2023}
+  year={2024}
 }
 ```
 # 等待施工
