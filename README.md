@@ -6,7 +6,7 @@
 ## Citations
 
 ```bibtex
-@article{郭2023hypersegunet,
+@article{郭2024hypersegunet,
   title={Hyper-SegUNet:基于超网络的超参自学习医学图像分割模型},
   author={郭逸凡 and 裴瑄 and 王大寒 and 陈培芝},
   journal={四川师范大学学报(录用)},
