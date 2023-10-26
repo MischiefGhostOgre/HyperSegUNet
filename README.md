@@ -17,6 +17,7 @@
 # 等待施工
 由于目前仅录用，估计24年一月左右会刊登，因此，请暂时等待。
 你可以在BiliBili和知乎联系我，任何有关医学图像配准和医学图像处理的问题，都可以咨询。
+
 BiliBili（暑假作业多了）：https://m.bilibili.com/space/1655726
 
 知乎（妹儿红着呢）：https://www.zhihu.com/people/GhostOgre
