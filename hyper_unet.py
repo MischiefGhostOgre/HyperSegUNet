@@ -13,8 +13,11 @@ class HyperModel(nn.Module):
         pre = hyper_num
         for ii in range(hyper_layer_num):
             self.hyper_dense_List.append(HyperLinear(pre, hyper_layer_unit[ii]))
-            if hyper_layer_num % 1 == 0:
-                self.hyper_dense_List.append(nn.ReLU(inplace=True))
+            """
+            without it is good?
+            # if hyper_layer_num % 1 == 0:
+            #     self.hyper_dense_List.append(nn.ReLU(inplace=True))
+            """
             self.hyper_dense_List.append(nn.Dropout(0.10))
 
             pre = hyper_layer_unit[ii]
@@ -22,8 +25,9 @@ class HyperModel(nn.Module):
 
     def forward(self, hyper):
         out = hyper.clone()
+        hyper_ = hyper[0,0]
         for layer in self.hyper_dense_List:
-            out = layer(out)
+            out = layer(out) * hyper_
 
         return out
 
@@ -81,13 +85,13 @@ class HyperConv2d(nn.Module):
             self.dense_bias.bias.data.uniform_(-stdv, stdv)
 
 
-    def forward(self, hyper, x):
-        weight = self.dense_weight(hyper)
+    def forward(self, hyper, x, lambda_=1.0):
+        weight = self.dense_weight(hyper) * lambda_
         weight = weight.reshape(self.conv_weight_shape)
 
 
         if not self.use_batchnorm:
-            bias = self.dense_bias(hyper)
+            bias = self.dense_bias(hyper) * lambda_
             bias = bias.squeeze()
             x = F.conv2d(x, weight, bias, stride=self.stride, padding=self.padding)
         else:
@@ -130,17 +134,17 @@ class HyperConvBlock(nn.Module):
         
         self.dropout = nn.Dropout2d(0.2) 
 
-    def forward(self, hyper, x):
+    def forward(self, hyper, x, lambda_=1.0):
         out = self.conv0(x)
         out = self.bn0(out)
         resual = out.clone()
         
-        out = self.conv1(hyper, out)
+        out = self.conv1(hyper, out, lambda_=lambda_)
         out = self.bn1(out)
         out = self.relu(out)
         out = self.dropout(out)
 
-        out = self.conv2(hyper, out)
+        out = self.conv2(hyper, out, lambda_=lambda_)
         out = self.bn2(out)
         out = out + resual
         out = self.relu(out)
@@ -148,9 +152,17 @@ class HyperConvBlock(nn.Module):
 
         return out
 
+class FinConv(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=1, padding=0):
+        super().__init__()
+        self.conv = HyperConv2d(in_channels, out_channels, kernel_size, padding)
+        self.conv_ = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+    def forward(self, hyper, x, lambda_=1.0):
+        out = self.conv(hyper, x, lambda_) 
+        return out
 
 class Unet(nn.Module):
-    def __init__(self, input_channels=3, num_classes=9, **kwargs):
+    def __init__(self, input_channels=3, num_classes=9, hyper_layer_num=6, hyper_layer_size=256, is_add_contrasts=True):
         super().__init__()
 
         nb_filter = [32, 64, 128, 256, 512]
@@ -168,24 +180,32 @@ class Unet(nn.Module):
         self.conv2_2 = HyperConvBlock(nb_filter[2] + nb_filter[3], nb_filter[2], nb_filter[2])
         self.conv1_3 = HyperConvBlock(nb_filter[1] + nb_filter[2], nb_filter[1], nb_filter[1])
         self.conv0_4 = HyperConvBlock(nb_filter[0] + nb_filter[1], nb_filter[0], nb_filter[0])
-
-        self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
+        
+        self.is_add_contrasts = is_add_contrasts
+        self.final = FinConv(nb_filter[0], num_classes, kernel_size=1) if self.is_add_contrasts else nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
         self.hyper_model = HyperModel(512, hyper_layer_num, hyper_layer_size)
 
 
     def forward(self, hyper, input):
+        hyper_ = hyper[0,0]
+        hyper = self.hyper_model(hyper)
+
+        
         x0_0 = self.conv0_0(input)
         x1_0 = self.conv1_0(self.pool(x0_0))
         x2_0 = self.conv2_0(self.pool(x1_0))
         x3_0 = self.conv3_0(self.pool(x2_0))
         x4_0 = self.conv4_0(self.pool(x3_0))
 
-        hyper = self.hyper_model(hyper)
-        x3_1 = self.conv3_1(hyper, torch.cat([x3_0, self.up(x4_0)], 1))
-        x2_2 = self.conv2_2(hyper, torch.cat([x2_0, self.up(x3_1)], 1))
-        x1_3 = self.conv1_3(hyper, torch.cat([x1_0, self.up(x2_2)], 1))
-        x0_4 = self.conv0_4(hyper, torch.cat([x0_0, self.up(x1_3)], 1))
+        
+        x3_1 = self.conv3_1(hyper, torch.cat([x3_0, self.up(x4_0)], 1), hyper_)
+        x2_2 = self.conv2_2(hyper, torch.cat([x2_0, self.up(x3_1)], 1), hyper_)
+        x1_3 = self.conv1_3(hyper, torch.cat([x1_0, self.up(x2_2)], 1), hyper_)
+        x0_4 = self.conv0_4(hyper, torch.cat([x0_0, self.up(x1_3)], 1), hyper_)
 
-        output = self.final(x0_4)
+        if self.is_add_contrasts:
+            output = self.final(x0_4, hyper_)
+        else:
+            output = self.final(x0_4)
         return output
 
