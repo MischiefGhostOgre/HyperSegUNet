@@ -62,12 +62,19 @@ if __name__ == '__main__':
     test_save_path = None
 
     net.load_state_dict(torch.load("./save_model_pt/Synapse/Hyper_model/epoch_149_hyper.pth"))
-    hyper = np.zeros((512,)) + 0.8
-    hyper = torch.from_numpy(hyper).cuda()
-    hyper = hyper[None, ...]
-    hyper = hyper.float()
+    # hyper = np.zeros((512,)) + 0.8
+    # hyper = torch.from_numpy(hyper).cuda()
+    # hyper = hyper[None, ...]
+    # hyper = hyper.float()
+    for ii in np.arange(0.1, 1.1, 0.1):
+        print("hyper:", ii)
+        hyper = np.zeros((512,)) + ii
+        hyper = torch.from_numpy(hyper).cuda()
+        hyper = hyper[None, ...]
+        hyper = hyper.float()
 
-    inference_hyper(net, test_save_path, hyper)
+        inference_hyper(net, test_save_path, hyper)
+
 
 
 
