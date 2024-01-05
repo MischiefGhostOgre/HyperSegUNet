@@ -73,6 +73,7 @@ python test.py
 
 # 致谢
 非常感谢TransUNet的作者Jieneng Chen等人，向我们提供处理好的数据集。
+
 非常感谢HyperMorph的作者Andrew Hoopes等人、Hypernet的作者Sungmin Hong等人的开源项目，受他们的启发，我们才能做出本文工作。
 
 
