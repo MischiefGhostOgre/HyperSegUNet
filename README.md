@@ -77,6 +77,7 @@ python test.py
 非常感谢HyperMorph的作者Andrew Hoopes等人、Hypernet的作者Sungmin Hong等人的开源项目，受他们的启发，我们才能做出本文工作。
 
 
+# 其他
 你可以在BiliBili和知乎联系我，任何有关医学图像配准和医学图像处理的问题，力所能及，都可以咨询。
 
 BiliBili（暑假作业多了）：https://m.bilibili.com/space/1655726
