@@ -48,10 +48,9 @@ def inference_val(model, dice_list=[], test_save_path=None):
 
     dice_performance = np.mean(metric_list, axis=0)[0]
     hd_performance = np.mean(metric_list, axis=0)[1]
-    mse_performance = np.mean(metric_list, axis=0)[2]
     print("avg dice:, avg hd:", dice_performance, hd_performance)
 
-    return dice_performance, hd_performance, mse_performance
+    return dice_performance, hd_performance
 
 
 def test():
@@ -63,7 +62,7 @@ def test():
     device = torch.device('cuda:0')
     model = model.to(device)
 
-    dice_performance, hd_performance, mse_performance = inference_val(model=model, dice_list=dice_list,
+    dice_performance, hd_performance = inference_val(model=model, dice_list=dice_list,
                                                                       test_save_path=test_save_path)
 
 
