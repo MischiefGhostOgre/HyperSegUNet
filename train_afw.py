@@ -21,7 +21,6 @@ parser.add_argument("--batch_size", type=int, default=24)
 parser.add_argument("--base_lr", type=float, default=0.01)
 parser.add_argument("--img_size", type=int, default=224)
 parser.add_argument("--save_pth_dir", type=str, default="./save_model_pt/Synapse/")
-parser.add_argument("--model_name", type=str, default="unet")
 args = parser.parse_args()
 
 base_lr = args.base_lr
@@ -55,11 +54,9 @@ def main():
     trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
                              worker_init_fn=worker_init_fn)
 
-    if model_name == "unet":
-        from base_networks import Unet  # Unet
-        model = Unet(input_channels=3, num_classes=num_classes)
-    else:
-        pass
+    
+    from base_networks import Unet  # Unet
+    model = Unet(input_channels=3, num_classes=num_classes)
 
     device = torch.device('cuda:0')
     model = model.to(device)
