@@ -83,7 +83,7 @@ python test.py
 ```
 训练智能计算机那篇论文
 ```
-python ...
+python train_afw.py --train_data /data2/guoyifan/CHAOS/train_npz/ --dataset CHAOS --save_pth_dir ./save_model_pt/CHAOS/
 ```
 测试
 ```
