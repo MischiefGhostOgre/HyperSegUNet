@@ -144,3 +144,54 @@ class Homoscedastic(torch.nn.Module):
 
         return multi_task_losses
     
+class DiceLoss_weights(nn.Module):
+    def __init__(self, n_classes,reduction="mean"):
+        super(DiceLoss_weights, self).__init__()
+        self.n_classes = n_classes
+        
+        self.reduction = reduction
+        self.log_vars = nn.Parameter(torch.zeros(self.n_classes))
+
+    def _one_hot_encoder(self, input_tensor):
+        tensor_list = []
+        for i in range(self.n_classes):
+            temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
+            tensor_list.append(temp_prob.unsqueeze(1))
+        output_tensor = torch.cat(tensor_list, dim=1)
+        return output_tensor.float()
+
+    def _dice_loss(self, score, target):
+        target = target.float()
+        smooth = 1e-5
+        intersect = torch.sum(score * target)
+        y_sum = torch.sum(target * target)
+        z_sum = torch.sum(score * score)
+        loss = (2 * intersect + smooth) / (z_sum + y_sum + smooth)
+        loss = 1 - loss
+        return loss
+
+    def forward(self, inputs, target, softmax=False):
+        if softmax:
+            inputs = torch.softmax(inputs, dim=1)
+        target = self._one_hot_encoder(target)
+
+        dtype = inputs.dtype
+        device = inputs.device
+
+        stds = (torch.exp(self.log_vars) ** (1 / 2)).to(device).to(dtype)
+        coeffs = (stds * stds) ** (-1)
+
+        losses = torch.zeros(self.n_classes, device=device)
+        for i in range(self.n_classes):
+            losses[i] += self._dice_loss(inputs[:, i], target[:, i])
+
+        multi_task_losses = (coeffs[1:] * torch.pow(losses[1:], 0.25)).sum() + torch.log((stds * stds).prod() + 1).sum()
+        multi_task_losses += coeffs[0] * losses[0]
+
+        if self.reduction == 'sum':
+            multi_task_losses = multi_task_losses.sum()
+        elif self.reduction == 'mean':
+            multi_task_losses = multi_task_losses.mean()
+            # multi_task_losses /= self.n_classes
+
+        return multi_task_losses
