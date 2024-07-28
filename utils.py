@@ -203,7 +203,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
     
     if len(image.shape) == 3:  
         prediction = np.zeros_like(label)
-        print(image.shape)
+        
         for ind in range(image.shape[0]):
             slice = image[ind, :, :]
             x, y = slice.shape[0], slice.shape[1]
@@ -212,7 +212,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float().cuda()
             net.eval()
             with torch.no_grad():
-                input = torch.cat([input, input, input], 1)  # for van
+                input = torch.cat([input, input, input], 1)  
                 outputs = net(input)
                 out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
                 out = out.cpu().detach().numpy()
