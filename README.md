@@ -69,7 +69,7 @@ train_data：训练数据所在的路径
 
 --mixup 是否使用mixup策略（未来进一步扩展的工作）
 
---homo 是否使用同方差不确定性策略（未来进一步扩展的工作）
+--homo 是否使用同方差不确定性策略（已扩展，具体请见论文[2]）
 ```
 
 训练川师学报那篇论文
@@ -85,9 +85,9 @@ python test.py
 ```
 python train_afw.py --train_data /data2/guoyifan/CHAOS/train_npz/ --dataset CHAOS --save_pth_dir ./save_model_pt/CHAOS/
 ```
-测试
+测试 注意这里仍然记得修改测试集的路径
 ```
-python ...
+python test_afw.py
 ```
 
 
