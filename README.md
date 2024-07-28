@@ -15,6 +15,19 @@
   year={2024}
 }
 ```
+[2]郭逸凡,林佳成,潘济,等.采用不对称聚焦加权Dice损失分割腹部CT图像[J].智能计算机与应用,2024,14(07):20-28.
+```bibtex
+@article{ DLXZ202407003,
+author = { 郭逸凡 and  林佳成 and  潘济 and  蒋婷 },
+title = {采用不对称聚焦加权Dice损失分割腹部CT图像},
+journal = {智能计算机与应用},
+volume = {14},
+pages = {20-28},
+year = {2024},
+issn = {2095-2163},
+doi = {10.20169/j.issn.2095-2163.240703}
+}
+```
 # 安装环境和运行
 
 安装conda虚拟环境
@@ -25,7 +38,7 @@ conda create -n hypersegunet python=3.6
 ```
 conda activate hypersegunet
 ```
-从torch官网选择对应版本的torch， 这根据你的服务器具体配置有所不同
+从torch官网选择对应版本的torch， 这根据您的服务器具体配置有所不同
 ```
 pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 ```
@@ -59,7 +72,7 @@ train_data：训练数据所在的路径
 --homo 是否使用同方差不确定性策略（未来进一步扩展的工作）
 ```
 
-训练
+训练川师学报那篇论文
 ```
 python train.py --train_data /home/gyf/MyData/Synapse/Synapse/train_npz/ --save_pth_dir ./save_model_pt/Synapse/Hyper_model/
 ```
@@ -68,7 +81,14 @@ python train.py --train_data /home/gyf/MyData/Synapse/Synapse/train_npz/ --save_
 ```
 python test.py
 ```
-
+训练智能计算机那篇论文
+```
+python ...
+```
+测试
+```
+python ...
+```
 
 
 # 致谢
@@ -78,7 +98,7 @@ python test.py
 
 
 # 其他
-你可以在BiliBili和知乎联系我，任何有关医学图像配准和医学图像处理的问题，力所能及，都可以咨询。
+您可以在BiliBili和知乎联系我，任何有关医学图像配准和医学图像处理的问题，力所能及，都可以咨询。
 
 BiliBili（暑假作业多了）：https://m.bilibili.com/space/1655726
 
