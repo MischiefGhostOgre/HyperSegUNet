@@ -20,7 +20,7 @@ parser.add_argument("--max_epoch", type=int, default=150)
 parser.add_argument("--batch_size", type=int, default=24)
 parser.add_argument("--base_lr", type=float, default=0.01)
 parser.add_argument("--img_size", type=int, default=224)
-parser.add_argument("--save_pth_dir", type=str, default="./save_model_pt/Synapse/")
+parser.add_argument("--save_pth_dir", type=str, default="./save_model_pt/CHAOS/")
 args = parser.parse_args()
 
 base_lr = args.base_lr
